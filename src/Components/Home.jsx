@@ -62,9 +62,9 @@ export function Home() {
     >
       <h1 className="text-3xl font-bold mb-8">Today</h1>
 
-      {task.map((ele) => (
+      {task.length > 0 ? task.map((ele) => (
         <ListComponents key={ele._id} id={ele._id} title={ele.title} currentState={ele.isCompleted} fetchTasks={fetchTasks} />
-      ))}
+      )) : <div className="flex justify-center items-center h-[60vh] text-gray-500 text-2xl">No Task Available...</div>}
 
 
       <div className="flex items-center h-13 w-full gap-5 fixed bottom-10 left-0 px-5 sm:px-10">

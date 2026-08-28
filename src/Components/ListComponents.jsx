@@ -93,7 +93,7 @@ export function ListComponents(props) {
         </div>
       </div>
 
-      <FaRegCircleXmark onClick={() => deleteTask(props.id)} />
+      <FaRegCircleXmark onClick={() => deleteTask(props.id)} className="cursor-pointer" />
     </div>
   )
 }
