@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {RiCheckboxBlankLine, RiCheckboxFill} from "react-icons/ri"
 import { RiEditBoxLine } from "react-icons/ri";
 import { FaRegCircleXmark } from "react-icons/fa6";
-
-import { useEffect } from "react";
+import { SlCalender } from "react-icons/sl";
+import { TbMessageFilled } from "react-icons/tb";
 
 
 export function ListComponents(props) {
@@ -99,6 +99,8 @@ export function ListComponents(props) {
         rounded-xl
         transition-transform
         duration-300
+        border-l-10
+        ${props.taskDetails.isCompleted ? "border-green-500" : "border-red-500"}
         ${!isEditBtnOpen && "hover:scale-101"}
       `}
     >
@@ -127,8 +129,11 @@ export function ListComponents(props) {
         }
         <div>
           <p className={`${isCompleted && "line-through"}`}>{props.taskDetails.title}</p>
-          <p className="text-xs text-gray-500">
-            {new Date(props.taskDetails.date).toLocaleDateString('en-US', options)}
+
+          <p className="text-sm text-[#d95050] flex items-center gap-1.5">{props.taskDetails.about && <TbMessageFilled className="mt-2 mb-1" />}{props.taskDetails.about}</p>
+
+          <p className="text-xs text-[#2c7ef0] flex items-center gap-1.5 mt-1"><SlCalender />
+            {new Date(props.taskDetails.date).toLocaleDateString('en-US', options)}{props.taskDetails.time && ","} <span className="font-bold">{props.taskDetails.time}</span>
           </p>
         </div>
       </div>
