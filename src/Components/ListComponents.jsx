@@ -2,8 +2,6 @@ import { useState } from "react"
 import {RiCheckboxBlankLine, RiCheckboxFill} from "react-icons/ri"
 import { RiEditBoxLine } from "react-icons/ri";
 import { FaRegCircleXmark } from "react-icons/fa6";
-import { GoBell } from "react-icons/go";
-import { RxSwitch } from "react-icons/rx";
 
 import { useEffect } from "react";
 
@@ -29,11 +27,11 @@ export function ListComponents(props) {
         body: JSON.stringify({isCompleted: isCompleted})
       })
 
-      if (!response) {
+      if (!response.ok) {
         throw new Error(`Server returned status: ${response.status}`);
       }
 
-      fetchTasks()
+      props.fetchTasks()
       return;
     } catch (error) {
       return;
@@ -54,6 +52,32 @@ export function ListComponents(props) {
       if (!response.ok) {
         throw new Error(`Server returned status: ${response.status}`);
       }
+      props.fetchTasks()
+      return;
+    } catch (error) {
+      return;
+    }
+  }
+
+  const updateTask = async (id) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: taskDetails.title, 
+          category: taskDetails.category, 
+          about: taskDetails.about, 
+          date: taskDetails.date, 
+          time: taskDetails.time
+        })
+      })
+      if (!response.ok) {
+        throw new Error(`Server returned status: ${response.status}`);
+      }
+
       props.fetchTasks()
       return;
     } catch (error) {
@@ -122,46 +146,100 @@ export function ListComponents(props) {
             <form>
               <div className="w-full mb-4">
                 <label className="block mb-1 text-xs text-gray-500">Name</label>
-                <input type="text" value={taskDetails.title} onChange={(e) => setTaskDetails((prev) => ({...prev, title: e.target.value}))} placeholder="Task Name" className="outline-none text-black mb-1 border-b border-gray-400 w-full bg-transparent" />
+                <input type="text" value={taskDetails.title} onChange={(e) => setTaskDetails((prev) => ({...prev, title: e.target.value}))} placeholder="Task Name" className="outline-none text-black mb-1 border-b border-gray-400 w-full text-[18px] bg-transparent" />
+              </div>
+
+              <div className="w-full mb-4">
+                <label className="block mb-1 text-xs text-gray-500">Description</label>
+                <input type="text" value={taskDetails.about} onChange={(e) => setTaskDetails((prev) => ({...prev, about: e.target.value}))} placeholder="Task Name" className="outline-none text-black text-[18px] mb-1 border-b border-gray-400 w-full bg-transparent" />
               </div>
 
               <div className="w-full mb-4">
                 <label className="block mb-1 text-xs text-gray-500">Date</label>
-                <input type="date" value={new Date(taskDetails.date)} 
+                <input type="date" value={taskDetails.date?.split("T")[0]} 
                 onChange={(e) => setTaskDetails((prev) => ({...prev, date: e.target.value}))}
-                placeholder="Task Name" className="outline-none text-black mb-1 border-b border-gray-400 w-full bg-transparent" />
+                placeholder="Task Name" className="outline-none text-black mb-1 border-b text-[18px] border-gray-400 w-full" />
               </div>
 
               <div className="w-full mb-4">
                 <label className="block mb-1 text-xs text-gray-500">Starting Time</label>
                 <input type="time" value={taskDetails.time} 
                 onChange={(e) => setTaskDetails((prev) => ({...prev, time: e.target.value}))}
-                placeholder="Task Name" className="outline-none text-black mb-1 border-b border-gray-400 w-full bg-transparent" />
+                placeholder="Task Name" className="outline-none text-black mb-1 border-b text-[18px] border-gray-400 w-full " />
               </div>
-
-              <div className="flex items-center gap-1.5 text-base">
-                <GoBell className="text-base" />
-                <span>Remind Me</span>
-              </div>
-
 
               <div className="my-4">
                 <label className="block mb-1.5 text-xs text-gray-500">Category</label>
 
-                <div className="flex w-full items-center gap-2">
-                  <span className="text-center rounded-2xl py-2.5 text-sm bg-[#f5c8f1] text-[#d950c7] w-1/3">Study</span>
-                  <span className="text-center rounded-2xl py-2.5 text-sm bg-[#f2a1a1] text-[#e93f3f] w-1/3">Productive</span>
-                  <span className="text-center rounded-2xl py-2.5 text-sm bg-[#99cadf] text-[#2c7ef0] w-1/3">Life</span>
+                <div className="flex w-full h-15 items-center gap-2">
+                  <span 
+                    onClick={() => setTaskDetails((prev) => ({
+                      ...prev,
+                      category: "STUDY"
+                    }))} 
+                    className={`cursor-pointer text-center rounded-2xl py-2.5 text-sm bg-[#f5c8f1] text-[#d950c7] w-1/3 ${taskDetails.category === "STUDY" ? "border-2 border-[#d950c7]" : ""}`}
+                  >
+                    Study 📚
+                  </span>
+
+                  <span 
+                    onClick={() => setTaskDetails((prev) => ({
+                      ...prev,
+                      category: "PRODUCTIVE"
+                    }))} 
+                    className={`cursor-pointer text-center rounded-2xl py-2.5 text-sm bg-[#f2a1a1] text-[#e93f3f] w-1/3 ${taskDetails.category === "PRODUCTIVE" ? "border-2 border-[#e93f3f]" : ""}`}
+                  >
+                    Productive ⚡
+                  </span>
+
+                  <span 
+                    onClick={() => setTaskDetails((prev) => ({
+                      ...prev,
+                      category: "LIFE"
+                    }))} 
+                    className={`cursor-pointer text-center rounded-2xl py-2.5 text-sm bg-[#99cadf] text-[#2c7ef0] w-1/3 ${taskDetails.category === "LIFE" ? "border-2 border-[#2c7ef0]" : ""}`}
+                  >
+                    Life 🌍
+                  </span>
                 </div>
-                <div className="flex mt-2 justify-end">
-                  <span className="text-center rounded-2xl py-2.5 text-sm bg-[#eacf98] text-[#906614] w-1/3">Other</span>
+
+                <div className="flex w-full h-15 items-center gap-2">
+                  <span 
+                    onClick={() => setTaskDetails((prev) => ({
+                      ...prev,
+                      category: "WORK"
+                    }))} 
+                    className={`cursor-pointer text-center rounded-2xl py-2.5 text-sm bg-[#bbd950] text-[#566719] w-1/3 ${taskDetails.category === "WORK" ? "border-2 border-[#566719]" : ""}`}
+                  >
+                    Work 💼
+                  </span>
+
+                  <span 
+                    onClick={() => setTaskDetails((prev) => ({
+                      ...prev,
+                      category: "HEALTH"
+                    }))} 
+                    className={`cursor-pointer text-center rounded-2xl py-2.5 text-sm bg-[#3fe9b6] text-[#115641] w-1/3 ${taskDetails.category === "HEALTH" ? "border-2 border-[#115641]" : ""}`}
+                  >
+                    Health 🏃
+                  </span>
+
+                  <span 
+                    onClick={() => setTaskDetails((prev) => ({
+                      ...prev,
+                      category: "OTHER"
+                    }))} 
+                    className={`cursor-pointer text-center rounded-2xl py-2.5 text-sm bg-[#eacf98] text-[#906614] w-1/3 ${taskDetails.category === "OTHER" ? "border-2 border-[#906614]" : ""}`}
+                  >
+                    Other 📦
+                  </span>
                 </div>
               </div>
 
 
-              <div className="w-full flex gap-3 mt-1">
-                <button className="w-[50%] py-2 shadow-md border border-gray-400 shadow-[#747171] rounded-lg cursor-pointer duration-300 transition-all hover:translate-y-1">Cancel</button>
-                <button className="w-[50%] py-2 shadow-md border border-gray-400 shadow-[#747171] rounded-lg bg-[#D1A28B] cursor-pointer duration-300 transition-all hover:translate-y-1">Submit</button>
+              <div className="w-full flex gap-3 mt-1 text-[18px]">
+                <button type="button" onClick={() => setIsEditBtnOpen(false)} className="w-[50%] py-2 shadow-md border border-gray-400 shadow-[#747171] rounded-lg cursor-pointer duration-300 transition-all hover:translate-y-1">Cancel</button>
+                <button type="button" onClick={() => updateTask(taskDetails._id)} className="w-[50%] py-2 shadow-md border border-gray-400 shadow-[#747171] rounded-lg bg-[#D1A28B] cursor-pointer duration-300 transition-all hover:translate-y-1">Submit</button>
               </div>
             </form>
           </div>

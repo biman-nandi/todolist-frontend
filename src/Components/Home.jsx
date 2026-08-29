@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-
+import categoryColor from "../Addtionals/categoryColor.js"
 import { ListComponents } from "./ListComponents.jsx"
 import { useState } from "react"
 
@@ -83,7 +83,7 @@ export function Home() {
       {task.length > 0 ? 
         (Object.entries(groupedTask).map(([key, value]) => (
           <div key={key}>
-            <p className="text-[#D1A28B] font-bold text-lg">{key}</p>
+            <p style={{ color: categoryColor[key]}} className="font-bold text-lg">{key}</p>
 
             {value.map((ele) => (
               <ListComponents key={ele._id} fetchTasks={fetchTasks} taskDetails = {ele} />
