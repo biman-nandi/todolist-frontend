@@ -86,7 +86,7 @@ export function Home() {
             <p className="text-[#D1A28B] font-bold text-lg">{key}</p>
 
             {value.map((ele) => (
-              <ListComponents key={ele._id} id={ele._id} title={ele.title} currentState={ele.isCompleted} fetchTasks={fetchTasks} />
+              <ListComponents key={ele._id} fetchTasks={fetchTasks} taskDetails = {ele} />
             ))
             }
           </div>

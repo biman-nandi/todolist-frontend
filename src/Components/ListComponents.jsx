@@ -1,11 +1,23 @@
 import { useState } from "react"
 import {RiCheckboxBlankLine, RiCheckboxFill} from "react-icons/ri"
+import { RiEditBoxLine } from "react-icons/ri";
 import { FaRegCircleXmark } from "react-icons/fa6";
+import { GoBell } from "react-icons/go";
+import { RxSwitch } from "react-icons/rx";
+
 import { useEffect } from "react";
 
 
 export function ListComponents(props) {
-  const [isCompleted, setIsCompleted] = useState(props.currentState)
+  const [taskDetails, setTaskDetails] = useState(props.taskDetails)
+  const [isCompleted, setIsCompleted] = useState(taskDetails.isCompleted)
+  const [isEditBtnOpen, setIsEditBtnOpen] = useState(false)
+
+  const options = {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  }
 
   const updateState = async (id) => {
     try {
@@ -29,8 +41,9 @@ export function ListComponents(props) {
   }
 
   useEffect(() => {
-    updateState(props.id)
+    updateState(taskDetails._id)
   }, [isCompleted])
+
 
   const deleteTask = async (id) => {
     try {
@@ -50,7 +63,7 @@ export function ListComponents(props) {
 
   return (
     <div 
-      className="
+      className={`
         flex 
         justify-between
         items-center 
@@ -62,15 +75,15 @@ export function ListComponents(props) {
         rounded-xl
         transition-transform
         duration-300
-        hover:scale-101
-      "
+        ${!isEditBtnOpen && "hover:scale-101"}
+      `}
     >
-      <div className="flex gap-2.5">
+      <div className="flex gap-2.5 items-center">
         {isCompleted ?
         <RiCheckboxFill
           onClick={() => setIsCompleted(prev => !prev)}
           className="
-            text-gray-700
+            text-gray-500
             text-2xl
             font-extrabold
             shrink-0
@@ -80,7 +93,7 @@ export function ListComponents(props) {
         <RiCheckboxBlankLine
           onClick={() => setIsCompleted(prev => !prev)}
           className="
-            text-gray-700
+            text-gray-500
             text-2xl
             font-extrabold
             shrink-0
@@ -88,12 +101,72 @@ export function ListComponents(props) {
           "
         />
         }
-        <div className={`${isCompleted && "line-through"}`}>
-          {props.title}
+        <div>
+          <p className={`${isCompleted && "line-through"}`}>{props.taskDetails.title}</p>
+          <p className="text-xs text-gray-500">
+            {new Date(props.taskDetails.date).toLocaleDateString('en-US', options)}
+          </p>
         </div>
       </div>
 
-      <FaRegCircleXmark onClick={() => deleteTask(props.id)} className="cursor-pointer" />
+      <div className="flex gap-5 items-center">
+        <RiEditBoxLine onClick={() => setIsEditBtnOpen(prev => !prev)} className="cursor-pointer" />
+        <FaRegCircleXmark onClick={() => deleteTask(taskDetails._id)} className="cursor-pointer" />
+      </div>
+
+      {isEditBtnOpen && 
+        <div className="fixed inset-0 z-50 bg-black/30 flex justify-center items-center ">
+          <div className="w-100 bg-gray-200 p-5 rounded-lg">
+            <h6 className="text-center">Edit Task</h6>
+
+            <form>
+              <div className="w-full mb-4">
+                <label className="block mb-1 text-xs text-gray-500">Name</label>
+                <input type="text" value={taskDetails.title} onChange={(e) => setTaskDetails((prev) => ({...prev, title: e.target.value}))} placeholder="Task Name" className="outline-none text-black mb-1 border-b border-gray-400 w-full bg-transparent" />
+              </div>
+
+              <div className="w-full mb-4">
+                <label className="block mb-1 text-xs text-gray-500">Date</label>
+                <input type="date" value={new Date(taskDetails.date)} 
+                onChange={(e) => setTaskDetails((prev) => ({...prev, date: e.target.value}))}
+                placeholder="Task Name" className="outline-none text-black mb-1 border-b border-gray-400 w-full bg-transparent" />
+              </div>
+
+              <div className="w-full mb-4">
+                <label className="block mb-1 text-xs text-gray-500">Starting Time</label>
+                <input type="time" value={taskDetails.time} 
+                onChange={(e) => setTaskDetails((prev) => ({...prev, time: e.target.value}))}
+                placeholder="Task Name" className="outline-none text-black mb-1 border-b border-gray-400 w-full bg-transparent" />
+              </div>
+
+              <div className="flex items-center gap-1.5 text-base">
+                <GoBell className="text-base" />
+                <span>Remind Me</span>
+              </div>
+
+
+              <div className="my-4">
+                <label className="block mb-1.5 text-xs text-gray-500">Category</label>
+
+                <div className="flex w-full items-center gap-2">
+                  <span className="text-center rounded-2xl py-2.5 text-sm bg-[#f5c8f1] text-[#d950c7] w-1/3">Study</span>
+                  <span className="text-center rounded-2xl py-2.5 text-sm bg-[#f2a1a1] text-[#e93f3f] w-1/3">Productive</span>
+                  <span className="text-center rounded-2xl py-2.5 text-sm bg-[#99cadf] text-[#2c7ef0] w-1/3">Life</span>
+                </div>
+                <div className="flex mt-2 justify-end">
+                  <span className="text-center rounded-2xl py-2.5 text-sm bg-[#eacf98] text-[#906614] w-1/3">Other</span>
+                </div>
+              </div>
+
+
+              <div className="w-full flex gap-3 mt-1">
+                <button className="w-[50%] py-2 shadow-md border border-gray-400 shadow-[#747171] rounded-lg cursor-pointer duration-300 transition-all hover:translate-y-1">Cancel</button>
+                <button className="w-[50%] py-2 shadow-md border border-gray-400 shadow-[#747171] rounded-lg bg-[#D1A28B] cursor-pointer duration-300 transition-all hover:translate-y-1">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      }
     </div>
   )
 }
