@@ -168,7 +168,7 @@ export function ListComponents(props) {
 
               <div className="w-full mb-4">
                 <label className="block mb-1 text-xs text-gray-500">Description</label>
-                <input type="text" value={taskDetails.about} onChange={(e) => setTaskDetails((prev) => ({...prev, about: e.target.value}))} placeholder="Task Name" className="outline-none text-black text-[18px] mb-1 border-b border-gray-400 w-full bg-transparent" />
+                <input type="text" value={taskDetails.about} onChange={(e) => setTaskDetails((prev) => ({...prev, about: e.target.value}))} placeholder="description" className="outline-none text-black text-[18px] mb-1 border-b border-gray-400 w-full bg-transparent" />
               </div>
 
               <div className="w-full mb-4">
