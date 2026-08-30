@@ -1,13 +1,15 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import categoryColor from "../Addtionals/categoryColor.js"
 import { ListComponents } from "./ListComponents.jsx"
-import { useState } from "react"
 import toast from "react-hot-toast"
 
 
 export function Home() {
+  const todayDate = new Date()
+
   const [task, setTask] = useState([])
   const [newTask, setNewTask] = useState("");
+  const [showNav, setShowNav] = useState(true)
 
   const fetchTasks = async () => {
     try {
@@ -28,6 +30,18 @@ export function Home() {
 
   useEffect(() => {
     fetchTasks()
+
+    let lastScroll = 0
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > lastScroll) {
+        setShowNav(false)
+      } else {
+        setShowNav(true)
+      }
+
+      lastScroll = window.scrollY
+    })
   }, [])
 
 
@@ -86,11 +100,25 @@ export function Home() {
         relative
         h-full
         p-5
-        mb-8
         sm:p-10
       "
     >
-      <h1 className="text-3xl font-bold mb-8">Today</h1>
+      <div className="flex items-start justify-between">
+        <h1 className="text-3xl font-bold mb-8">
+          Today 
+          <span
+            className="text-base ml-2 text-gray-500"
+          >
+            {"("}
+            {todayDate.getDate()}/{todayDate.getMonth()}/{todayDate.getFullYear()}
+            {")"}
+          </span>
+        </h1>
+
+        <div className="flex items-center cursor-pointer">
+          <img src="https://static.thenounproject.com/png/140726-200.png" alt="profile-pic" className="w-7 h-7 rounded-full border border-gray-300 p-1" />
+        </div>
+      </div>
 
 
       {task.length > 0 ? 
@@ -109,7 +137,26 @@ export function Home() {
       }
 
 
-      <div className="flex items-center w-full gap-5 fixed bottom-0 left-0 px-5 sm:px-10 bg-[#F9F5F4] py-3 border-t border-gray-300">
+      {/* Add Task navbar */}
+      <div 
+      className={`
+        flex 
+        items-center 
+        w-full 
+        gap-5 
+        fixed 
+        bottom-0 
+        left-0 
+        px-5 
+        sm:px-10 
+        bg-[#F9F5F4] 
+        py-3 border-t 
+        border-gray-300
+        duration-300
+        transition-transform
+        ${showNav ? "translate-y-0" : "translate-y-full"}
+      `}
+      >
         <input 
           type="text" 
           placeholder="Write a task..." 
