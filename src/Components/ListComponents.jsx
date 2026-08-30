@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {RiCheckboxBlankLine, RiCheckboxFill} from "react-icons/ri"
 import { RiEditBoxLine } from "react-icons/ri";
 import { FaRegCircleXmark } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import { TbMessageFilled } from "react-icons/tb";
+import toast from "react-hot-toast"
 
 
 export function ListComponents(props) {
@@ -17,30 +18,31 @@ export function ListComponents(props) {
     day: 'numeric'
   }
 
-  const updateState = async (id) => {
+  const updateState = async (id, state) => {
+    setIsCompleted(state)
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({isCompleted: isCompleted})
+        body: JSON.stringify({isCompleted: state})
       })
 
       if (!response.ok) {
-        throw new Error(`Server returned status: ${response.status}`);
+        toast.error('Something went wrong')
+        return
       }
 
-      props.fetchTasks()
+      await props.fetchTasks()
+
+      {state ? toast.success("Marked as completed!") : toast.success("Marked as incomplete!")}
       return;
     } catch (error) {
+      toast.error(error.message)
       return;
     }
   }
-
-  useEffect(() => {
-    updateState(taskDetails._id)
-  }, [isCompleted])
 
 
   const deleteTask = async (id) => {
@@ -50,11 +52,16 @@ export function ListComponents(props) {
       })
 
       if (!response.ok) {
-        throw new Error(`Server returned status: ${response.status}`);
+        toast.error('Something went wrong.')
+        return;
       }
-      props.fetchTasks()
+      await props.fetchTasks()
+
+      toast.success('Task deleted successfully!')
+
       return;
     } catch (error) {
+      toast.error(error.message)
       return;
     }
   }
@@ -75,12 +82,17 @@ export function ListComponents(props) {
         })
       })
       if (!response.ok) {
-        throw new Error(`Server returned status: ${response.status}`);
+        toast.error('Something went wrong.')
+        return;
       }
 
-      props.fetchTasks()
+      setIsEditBtnOpen(false)
+      await props.fetchTasks()
+
+      toast.success('Task updated successfully!')
       return;
     } catch (error) {
+      toast.error(error.message)
       return;
     }
   }
@@ -107,7 +119,7 @@ export function ListComponents(props) {
       <div className="flex gap-2.5 items-center">
         {isCompleted ?
         <RiCheckboxFill
-          onClick={() => setIsCompleted(prev => !prev)}
+          onClick={() => updateState(props.taskDetails._id, false)}
           className="
             text-gray-500
             text-2xl
@@ -117,7 +129,7 @@ export function ListComponents(props) {
           "
         /> : 
         <RiCheckboxBlankLine
-          onClick={() => setIsCompleted(prev => !prev)}
+          onClick={() => updateState(props.taskDetails._id, true)}
           className="
             text-gray-500
             text-2xl
@@ -130,9 +142,9 @@ export function ListComponents(props) {
         <div>
           <p className={`${isCompleted && "line-through"}`}>{props.taskDetails.title}</p>
 
-          <p className="text-sm text-[#d95050] flex items-center gap-1.5">{props.taskDetails.about && <TbMessageFilled className="mt-2 mb-1" />}{props.taskDetails.about}</p>
+          <p className="text-sm text-[#d95050] flex items-center gap-1.5">{props.taskDetails.about && <TbMessageFilled className="mt-2 mb-1 shrink-0" />}{props.taskDetails.about}</p>
 
-          <p className="text-xs text-[#2c7ef0] flex items-center gap-1.5 mt-1"><SlCalender />
+          <p className="text-xs text-[#2c7ef0] flex items-center gap-1.5 mt-1"><SlCalender className="shrink-0" />
             {new Date(props.taskDetails.date).toLocaleDateString('en-US', options)}{props.taskDetails.time && ","} <span className="font-bold">{props.taskDetails.time}</span>
           </p>
         </div>
@@ -243,8 +255,46 @@ export function ListComponents(props) {
 
 
               <div className="w-full flex gap-3 mt-1 text-[18px]">
-                <button type="button" onClick={() => setIsEditBtnOpen(false)} className="w-[50%] py-2 shadow-md border border-gray-400 shadow-[#747171] rounded-lg cursor-pointer duration-300 transition-all hover:translate-y-1">Cancel</button>
-                <button type="button" onClick={() => updateTask(taskDetails._id)} className="w-[50%] py-2 shadow-md border border-gray-400 shadow-[#747171] rounded-lg bg-[#D1A28B] cursor-pointer duration-300 transition-all hover:translate-y-1">Submit</button>
+                <button 
+                  type="button" 
+                  onClick={() => setIsEditBtnOpen(false)} 
+                  className="
+                    w-[50%] 
+                    py-2 
+                    shadow-md 
+                    border 
+                    border-gray-400 
+                    shadow-[#747171] 
+                    rounded-lg 
+                    cursor-pointer 
+                    duration-300 
+                    transition-all 
+                    hover:translate-y-1
+                  "
+                >
+                  Cancel
+                </button>
+
+                <button 
+                  type="button" 
+                  onClick={() => updateTask(taskDetails._id)}
+                  className="
+                    w-[50%] 
+                    py-2 
+                    shadow-md 
+                    border 
+                    border-gray-400 
+                    shadow-[#747171] 
+                    rounded-lg 
+                    bg-[#D1A28B] 
+                    cursor-pointer 
+                    duration-300 
+                    transition-all 
+                    hover:translate-y-1
+                  "
+                >
+                  Submit
+                </button>
               </div>
             </form>
           </div>
