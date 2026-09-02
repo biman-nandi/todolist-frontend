@@ -110,7 +110,7 @@ export function Home() {
             className="text-base ml-2 text-gray-500"
           >
             {"("}
-            {todayDate.getDate()}/{todayDate.getMonth()}/{todayDate.getFullYear()}
+            {todayDate.getDate()}/{todayDate.getMonth() + 1}/{todayDate.getFullYear()}
             {")"}
           </span>
         </h1>
